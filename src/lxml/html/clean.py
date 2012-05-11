@@ -143,6 +143,9 @@ class Cleaner(object):
     ``remove_unknown_tags``:
         Remove any tags that aren't standard parts of HTML.
 
+    ``all_attrs``:
+        If true, remove all attributes.
+
     ``safe_attrs_only``:
         If true, only include 'safe' attributes (specifically the list
         from `feedparser
@@ -190,6 +193,7 @@ class Cleaner(object):
     kill_tags = None
     remove_unknown_tags = True
     safe_attrs_only = True
+    all_attrs = False
     add_nofollow = False
     host_whitelist = ()
     whitelist_tags = set(['iframe', 'embed'])
@@ -247,12 +251,12 @@ class Cleaner(object):
 
         if self.scripts:
             kill_tags.add('script')
-        if self.safe_attrs_only:
+        if self.safe_attrs_only or self.all_attrs:
             safe_attrs = set(defs.safe_attrs)
             for el in doc.iter():
                 attrib = el.attrib
                 for aname in attrib.keys():
-                    if aname not in safe_attrs:
+                    if self.all_attrs or aname not in safe_attrs:
                         del attrib[aname]
         if self.javascript:
             if not self.safe_attrs_only:
@@ -705,4 +709,3 @@ def _insert_break(word, width, break_character):
         word = word[len(start):]
     result += word
     return result
-    
